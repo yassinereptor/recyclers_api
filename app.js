@@ -15,7 +15,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 mongoose.promise = global.Promise;
 
 app.use(compression());
-// app.use(cors());
+app.use(cors());
 app.use(require('morgan')('dev'));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(bodyParser.json({limit: '50mb', extended: true}));
