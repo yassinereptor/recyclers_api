@@ -3,7 +3,11 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const errorHandler = require('errorhandler');
 const passport = require('passport');
+const md5 = require('md5');
 const auth = require('./config/auth');
+const jwt = require('jsonwebtoken');
+const fs = require("fs");
+const path = require("path");
 
 const router = express.Router();
 
@@ -11,9 +15,11 @@ mongoose.connect('mongodb://yassinereptor:85001997fil@ds135427.mlab.com:35427/re
 mongoose.set('debug', true);
 
 require('./models/users');
+require('./models/product');
 require('./config/passport');
 
 const Users = mongoose.model('Users');
+const Product = mongoose.model('Product');
 
 
 router.post('/signup', auth.optional, (req, res, next) => {
@@ -167,5 +173,111 @@ router.get('/current', auth.required, (req, res, next) => {
             });
         });
 });
+
+
+router.post('/product/add', auth.required, (req, res, next) => {
+    const prod = {
+        user_id: req.body.user_id,
+        user_name: req.body.user_name,
+        title: req.body.title, 
+        desc: req.body.desc,
+        price: req.body.price,
+        quantity: req.body.quantity,
+        quality: req.body.quality,
+        fix: req.body.fix,
+        bid: req.body.bid,
+        unit: req.body.unit,
+        cat: req.body.cat,
+        time: req.body.time,
+    }
+
+    console.log(prod);
+
+    if (!prod.user_id) {
+        return res.status(422).json({
+            errors: {
+                email: 'is required',
+            },
+        });
+    }
+
+    if (!prod.title) {
+        return res.status(422).json({
+            errors: {
+                email: 'is required',
+            },
+        });
+    }
+
+    if (!prod.price) {
+        return res.status(422).json({
+            errors: {
+                password: 'is required',
+            },
+        });
+    }
+
+   
+
+    var images = Array();
+
+
+    var user_data = jwt.verify(req.headers.authorization.split(" ")[1], "1337fil");
+    req.body.images.forEach(element => {
+        var name  = md5(req.headers.authorization + (new Date()).getTime());
+        var folder = "storage/products/" + user_data.id;
+        if (!fs.existsSync(folder)){
+            fs.mkdirSync(folder);
+        }
+        images.push(name + ".png");
+        fs.writeFile(folder + "/" + name + ".png", element, 'base64', function(err) {
+            console.log(err);
+            });
+
+    });
+
+    prod.images = images;
+    const finalProduct = new Product(prod);
+
+    return finalProduct.save()
+        .then(()=> {
+        return res.json({
+            result: true
+        });
+    });
+
+});
+
+
+router.post('/product/load', auth.optional, (req, res, next) => {
+    const payload = {
+        filter: req.body.filter,
+        cat: req.body.cats,
+        limit: parseInt(req.body.limit),
+        skip: parseInt(req.body.skip)
+    }
+
+    var array = Array();
+    payload.cat.forEach((item)=>{
+        array.push({"cat": item});
+    });
+    Product.find((array.length > 0)? {$or: array} : {}).sort([[payload.filter, -1]]).skip(payload.skip).limit(payload.limit).exec((err, data) => {
+        if(err)
+            return res.json(err);
+        console.log(payload);
+        // data.forEach((item)=>{
+        //     Users.findById(item.user_id).then((user) => {
+        //     if (!user) {
+        //         return res.sendStatus(400);
+        //     }
+        //     item.user_name = user.name;
+        //     console.log(data);
+        //     });
+        // });      
+        res.json(data); 
+    });
+});
+
+
 
 module.exports = router;

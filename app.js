@@ -20,6 +20,7 @@ app.use(require('morgan')('dev'));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(bodyParser.json({limit: '50mb', extended: true}));
 app.use('/api', router);
+app.use(express.static(__dirname + "/storage"));
 
 if(!isProduction) {
     app.use(errorHandler());
