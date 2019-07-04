@@ -41,7 +41,7 @@ if(!isProduction) {
 }
 
 app.get("/", (req, res)=>{
-    res.json("helllo");
+    res.json("Hello");
 });
 
 app.listen(app.get("port"), () => console.log('Server running on port : ' + _PORT));

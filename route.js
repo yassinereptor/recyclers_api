@@ -16,10 +16,12 @@ mongoose.set('debug', true);
 
 require('./models/users');
 require('./models/product');
+require('./models/review');
 require('./config/passport');
 
 const Users = mongoose.model('Users');
 const Product = mongoose.model('Product');
+const Review = mongoose.model('Review');
 
 
 router.post('/signup', auth.optional, (req, res, next) => {
@@ -264,20 +266,45 @@ router.post('/product/load', auth.optional, (req, res, next) => {
     Product.find((array.length > 0)? {$or: array} : {}).sort([[payload.filter, -1]]).skip(payload.skip).limit(payload.limit).exec((err, data) => {
         if(err)
             return res.json(err);
-        console.log(data);
-        // data.forEach((item)=>{
-        //     Users.findById(item.user_id).then((user) => {
-        //     if (!user) {
-        //         return res.sendStatus(400);
-        //     }
-        //     item.user_name = user.name;
-        //     console.log(data);
-        //     });
-        // });      
+        console.log(data); 
         res.json(data); 
     });
 });
 
+router.post('/product/review', auth.optional, (req, res, next) => {
+    const payload = {
+        post_user_id: req.body.post_user_id,
+        user_id: req.body.user_id,
+        post_id: req.body.post_id,
+        text: req.body.text,
+        rate: req.body.rate,
+        time: req.body.time
+    }
 
+    console.log(payload);
+    const finalReview = new Review(payload);
+
+    return finalReview.save()
+        .then(()=> {
+        return res.json({
+            result: true
+        });
+    });
+});
+
+router.post('/product/review/load', auth.optional, (req, res, next) => {
+    const payload = {
+        post_user_id: req.body.post_user_id,
+        limit: parseInt(req.body.limit),
+        skip: parseInt(req.body.skip)
+    }
+
+    Product.find({"post_user_id": payload.post_user_id}).sort([["time", -1]]).skip(payload.skip).limit(payload.limit).exec((err, data) => {
+        if(err)
+            return res.json(err);
+        console.log(data);   
+        res.json(data); 
+    });
+});
 
 module.exports = router;
