@@ -264,7 +264,7 @@ router.post('/product/load', auth.optional, (req, res, next) => {
     Product.find((array.length > 0)? {$or: array} : {}).sort([[payload.filter, -1]]).skip(payload.skip).limit(payload.limit).exec((err, data) => {
         if(err)
             return res.json(err);
-        console.log(payload);
+        console.log(data);
         // data.forEach((item)=>{
         //     Users.findById(item.user_id).then((user) => {
         //     if (!user) {
