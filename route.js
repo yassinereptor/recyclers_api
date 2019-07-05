@@ -282,14 +282,22 @@ router.post('/product/review', auth.optional, (req, res, next) => {
     }
 
     console.log(payload);
-    const finalReview = new Review(payload);
 
-    return finalReview.save()
-        .then(()=> {
-        return res.json({
-            result: true
+
+    Users.findById({_id: payload.user_id}).exec((err, data) => {
+        if(err)
+            return res.json(err);
+
+        payload.user_name = data.name;
+        const finalReview = new Review(payload);
+        return finalReview.save()
+            .then(()=> {
+            return res.json({
+                result: true
+            });
         });
     });
+   
 });
 
 router.post('/product/review/load', auth.optional, (req, res, next) => {
@@ -299,11 +307,11 @@ router.post('/product/review/load', auth.optional, (req, res, next) => {
         skip: parseInt(req.body.skip)
     }
 
-    Product.find({"post_user_id": payload.post_user_id}).sort([["time", -1]]).skip(payload.skip).limit(payload.limit).exec((err, data) => {
+    Review.find({"post_id": payload.post_user_id}).sort([["time", -1]]).skip(payload.skip).limit(payload.limit).exec((err, data) => {
         if(err)
             return res.json(err);
-        console.log(data);   
-        res.json(data); 
+        console.log(data);
+        return res.json(data);
     });
 });
 

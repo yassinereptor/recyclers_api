@@ -8,6 +8,7 @@ const ReviewSchema = new Schema({
     post_user_id: String,
     user_id: String,
     post_id: String,
+    user_name: String,
     text: String,
     rate: Number
 });
