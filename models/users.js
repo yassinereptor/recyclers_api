@@ -22,6 +22,7 @@ const UsersSchema = new Schema({
     country: String,
     pos: String,
     profile: String,
+    cart: Array,
     hash: String,
     salt: String,
 });

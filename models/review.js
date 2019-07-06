@@ -10,6 +10,7 @@ const ReviewSchema = new Schema({
     post_id: String,
     user_name: String,
     text: String,
+    profile: String,
     rate: Number
 });
 

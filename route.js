@@ -29,8 +29,8 @@ router.post('/signup', auth.optional, (req, res, next) => {
         email: req.body.email,
         password: req.body.password,
         name: req.body.name,
-        company_name: req.body.company,
-        company_id: req.body.company,
+        company_name: req.body.company_name,
+        company_id: req.body.company_id,
         cin: req.body.cin,
         phone: req.body.phone,
         seller: req.body.seller,
@@ -39,7 +39,6 @@ router.post('/signup', auth.optional, (req, res, next) => {
         lng: req.body.lng,
         country: req.body.country,
         pos: req.body.pos,
-        profile: req.body.profile
     }
 
     if (!user.email) {
@@ -99,14 +98,25 @@ router.post('/signup', auth.optional, (req, res, next) => {
         });
     }
 
+    if(req.body.profile != "non")
+        user.profile = "yes";
+    else
+        user.profile = "non";
+
     const finalUser = new Users(user);
-
     finalUser.setPassword(user.password);
-
     return finalUser.save()
-        .then(() => res.json({
+        .then(()=>{
+            if(req.body.profile != "non")
+            {
+                var folder = "storage/profiles";
+                fs.writeFile(folder + "/" + finalUser.toAuthJSON()._id + ".png", req.body.profile, 'base64', function(err) {
+                    console.log(err);
+                    });
+            }
+            return res.json({
             user: finalUser.toAuthJSON()
-        }));
+        })});
 });
 
 router.post('/login', auth.optional, (req, res, next) => {
@@ -176,6 +186,23 @@ router.get('/current', auth.required, (req, res, next) => {
         });
 });
 
+
+
+router.post('/info', auth.optional, (req, res, next) => {
+    const id = req.body.id;
+
+
+    return Users.findById(id)
+        .then((user) => {
+            if (!user) {
+                return res.sendStatus(400);
+            }
+            console.log(user);
+            return res.json({
+                user: user
+            });
+        });
+});
 
 router.post('/product/add', auth.required, (req, res, next) => {
     const prod = {
@@ -278,6 +305,7 @@ router.post('/product/review', auth.optional, (req, res, next) => {
         post_id: req.body.post_id,
         text: req.body.text,
         rate: req.body.rate,
+        profile: req.body.profile,
         time: req.body.time
     }
 
@@ -310,9 +338,50 @@ router.post('/product/review/load', auth.optional, (req, res, next) => {
     Review.find({"post_id": payload.post_user_id}).sort([["time", -1]]).skip(payload.skip).limit(payload.limit).exec((err, data) => {
         if(err)
             return res.json(err);
-        console.log(data);
         return res.json(data);
     });
+});
+
+router.post('/cart/load', auth.required, (req, res, next) => {
+    const id = req.body.id;
+
+    Users.findById(id).exec((err, data) => {
+        if(err)
+            return res.json(err);
+        return res.json(data["cart"]);
+    });
+});
+
+
+router.post('/cart/add', auth.required, (req, res, next) => {
+    const id = req.body.id;
+    const prod_id = req.body.prod_id;
+
+
+    Users.findById(id).exec((err, data)=>{
+        if(err)
+            return res.setS.json(err);
+        if(data.cart)
+        {
+            if(!data.cart.includes(prod_id))
+            {
+                data.cart.push(prod_id);
+                data.save();
+                return res.json({result: true});            
+            }
+            else
+            {
+                data.cart = data.cart.filter(function(item) { 
+                    return item !== prod_id
+                });
+                data.save();
+                return res.json({result: true}); 
+            }
+        }
+        
+    });
+
+    
 });
 
 module.exports = router;
