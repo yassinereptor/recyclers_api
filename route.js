@@ -360,7 +360,7 @@ router.post('/cart/add', auth.required, (req, res, next) => {
 
     Users.findById(id).exec((err, data)=>{
         if(err)
-            return res.setS.json(err);
+            return res.sendStatus(400).json(err);
         if(data.cart)
         {
             if(!data.cart.includes(prod_id))
@@ -381,6 +381,25 @@ router.post('/cart/add', auth.required, (req, res, next) => {
         
     });
 
+    
+});
+
+router.post('/profile/mode', auth.required, (req, res, next) => {
+    const id = req.body.id;
+    const seller = req.body.seller;
+    const bayer = req.body.bayer;
+
+
+    Users.findById(id).exec((err, data)=>{
+        if(err)
+            return res.sendStatus(400).json(err);
+ 
+        data.seller = seller;
+        data.bayer = bayer;
+        data.save();
+        return res.json({result: true});            
+       
+    });
     
 });
 
