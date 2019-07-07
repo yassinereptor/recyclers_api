@@ -426,4 +426,20 @@ router.post('/profile/mode', auth.required, (req, res, next) => {
     
 });
 
+router.get('/admin/users', auth.optional, (req, res, next) => {
+    Users.find().exec((err, data)=>{
+        if(err)
+            return res.sendStatus(400).json(err);
+        return res.json(data);            
+    });
+});
+
+router.get('/admin/products', auth.optional, (req, res, next) => {
+    Product.find().exec((err, data)=>{
+        if(err)
+            return res.sendStatus(400).json(err);
+        return res.json(data);            
+    });
+});
+
 module.exports = router;
