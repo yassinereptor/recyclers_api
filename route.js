@@ -342,20 +342,39 @@ router.post('/product/review/load', auth.optional, (req, res, next) => {
     });
 });
 
-router.post('/cart/load', auth.required, (req, res, next) => {
+router.post('/cart/load', auth.optional, (req, res, next) => {
     const id = req.body.id;
+
+    var prods = new Array();
 
     Users.findById(id).exec((err, data) => {
         if(err)
             return res.json(err);
-        return res.json(data["cart"]);
+        var ids = new Array();
+
+        data.cart.forEach((item)=>{
+            ids.push(item.prod_id);
+        });
+
+        Product.find({'_id': {$in: ids}}).exec((err, data) => {
+            if(err)
+                return res.json(err);
+            return res.json(data);
+        });
     });
 });
 
 
+function itemExists(arr, id) {
+return arr.some(function(el) {
+    return el.prod_id === id;
+}); 
+}
+
 router.post('/cart/add', auth.required, (req, res, next) => {
     const id = req.body.id;
     const prod_id = req.body.prod_id;
+    const quantite = req.body.quantite;
 
 
     Users.findById(id).exec((err, data)=>{
@@ -363,16 +382,20 @@ router.post('/cart/add', auth.required, (req, res, next) => {
             return res.sendStatus(400).json(err);
         if(data.cart)
         {
-            if(!data.cart.includes(prod_id))
+            
+            if(!itemExists(data.cart, prod_id))
             {
-                data.cart.push(prod_id);
+                data.cart.push({
+                    "prod_id": prod_id,
+                    "quantity": quantite
+                });
                 data.save();
                 return res.json({result: true});            
             }
             else
             {
-                data.cart = data.cart.filter(function(item) { 
-                    return item !== prod_id
+                data.cart = data.cart.filter(function(item) {
+                    return item.prod_id !== prod_id
                 });
                 data.save();
                 return res.json({result: true}); 
