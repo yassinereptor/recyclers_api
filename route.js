@@ -481,22 +481,25 @@ router.post('/admin/product/add', auth.optional, (req, res, next) => {
 
     var images = Array();
 
-
-    var user_data = jwt.verify(req.headers.authorization.split(" ")[1], "1337fil");
-    req.body.images.forEach(element => {
-        var name  = md5(req.headers.authorization + (new Date()).getTime());
-        var folder = "storage/products/" + user_data.id;
-        if (!fs.existsSync(folder)){
-            fs.mkdirSync(folder);
-        }
-        images.push(name + ".png");
-        fs.writeFile(folder + "/" + name + ".png", element, 'base64', function(err) {
-            console.log(err);
-            });
-
-    });
-
-    prod.images = images;
+    var user_data = "";
+    if(req.headers.authorization)
+        user_data = jwt.verify(req.headers.authorization.split(" ")[1], "1337fil");
+    if(req.body.images)
+    {
+        req.body.images.forEach(element => {
+            var name  = md5(req.headers.authorization + (new Date()).getTime());
+            var folder = "storage/products/" + user_data.id;
+            if (!fs.existsSync(folder)){
+                fs.mkdirSync(folder);
+            }
+            images.push(name + ".png");
+            fs.writeFile(folder + "/" + name + ".png", element, 'base64', function(err) {
+                console.log(err);
+                });
+    
+        });
+        prod.images = images;
+    }
     const finalProduct = new Product(prod);
 
     return finalProduct.save()
