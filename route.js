@@ -461,7 +461,7 @@ router.get('/admin/products', auth.optional, (req, res, next) => {
 });
 
 
-router.post('admin/product/add', auth.optional, (req, res, next) => {
+router.post('/admin/product/add', auth.optional, (req, res, next) => {
     const prod = {
         user_id: req.body.user_id,
         user_name: req.body.user_name,
