@@ -365,6 +365,7 @@ router.post('/cart/load', auth.optional, (req, res, next) => {
 });
 
 
+
 function itemExists(arr, id) {
 return arr.some(function(el) {
     return el.prod_id === id;
@@ -402,6 +403,23 @@ router.post('/cart/add', auth.required, (req, res, next) => {
             }
         }
         
+    });
+
+    
+});
+
+router.post('/cart/removeall', auth.required, (req, res, next) => {
+    const id = req.body.id;
+
+    Users.findById(id).exec((err, data)=>{
+        if(err)
+            return res.sendStatus(400).json(err);
+        if(data.cart)
+        {
+            data.cart = [];
+            data.save();
+            return res.json({result: true}); 
+        }
     });
 
     
