@@ -460,4 +460,52 @@ router.get('/admin/products', auth.optional, (req, res, next) => {
     });
 });
 
+
+router.post('admin/product/add', auth.optional, (req, res, next) => {
+    const prod = {
+        user_id: req.body.user_id,
+        user_name: req.body.user_name,
+        title: req.body.title, 
+        desc: req.body.desc,
+        price: req.body.price,
+        quantity: req.body.quantity,
+        quality: req.body.quality,
+        fix: req.body.fix,
+        bid: req.body.bid,
+        unit: req.body.unit,
+        cat: req.body.cat,
+        time: req.body.time,
+    }
+
+    console.log(prod);
+
+    var images = Array();
+
+
+    var user_data = jwt.verify(req.headers.authorization.split(" ")[1], "1337fil");
+    req.body.images.forEach(element => {
+        var name  = md5(req.headers.authorization + (new Date()).getTime());
+        var folder = "storage/products/" + user_data.id;
+        if (!fs.existsSync(folder)){
+            fs.mkdirSync(folder);
+        }
+        images.push(name + ".png");
+        fs.writeFile(folder + "/" + name + ".png", element, 'base64', function(err) {
+            console.log(err);
+            });
+
+    });
+
+    prod.images = images;
+    const finalProduct = new Product(prod);
+
+    return finalProduct.save()
+        .then(()=> {
+        return res.json({
+            result: true
+        });
+    });
+
+});
+
 module.exports = router;
