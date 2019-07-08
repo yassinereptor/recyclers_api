@@ -356,10 +356,18 @@ router.post('/cart/load', auth.optional, (req, res, next) => {
             ids.push(item.prod_id);
         });
 
-        Product.find({'_id': {$in: ids}}).exec((err, data) => {
+        Product.find({'_id': {$in: ids}}).exec((err, prods) => {
             if(err)
                 return res.json(err);
-            return res.json(data);
+            var p = Array();
+            p = prods.map((item, index)=>{
+                var i = {
+                    ...item._doc,
+                    "order": data.cart[index].quantity
+                };
+                return (i);
+            });
+            return res.json(p);
         });
     });
 });
