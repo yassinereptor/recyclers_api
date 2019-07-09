@@ -385,7 +385,7 @@ function bidExists(arr, id) {
     return arr.some(function(el) {
         return el.user_id === id;
     }); 
-    }
+}
 
     
 router.post('/cart/add', auth.required, (req, res, next) => {
@@ -487,6 +487,7 @@ router.post('/bid/add', auth.required, (req, res, next) => {
             return res.sendStatus(400).json(err);
         if(data.bid_list)
         {
+            console.log(data.bid_list);
             if(!bidExists(data.bid_list, id))
             {
                 data.bid_list.push({
