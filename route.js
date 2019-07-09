@@ -433,6 +433,41 @@ router.post('/cart/removeall', auth.required, (req, res, next) => {
     
 });
 
+
+router.post('/cart/total', auth.optional, (req, res, next) => {
+    const id = req.body.id;
+
+    Users.findById(id).exec((err, data) => {
+        if(err)
+            return res.json(err);
+        var ids = new Array();
+
+        data.cart.forEach((item)=>{
+            ids.push(item.prod_id);
+        });
+
+        Product.find({'_id': {$in: ids}}).exec((err, prods) => {
+            if(err)
+                return res.json(err);
+            var p = Array();
+            p = prods.map((item, index)=>{
+                var i = {
+                    ...item._doc,
+                    "order": data.cart[index].quantity
+                };
+                return (i);
+            });
+            var total = 0;
+            p.forEach((item)=>{
+                total += item.order * item.price;
+            });
+            return res.json(total);
+        });
+    });
+
+    
+});
+
 router.post('/profile/mode', auth.required, (req, res, next) => {
     const id = req.body.id;
     const seller = req.body.seller;
