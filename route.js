@@ -380,6 +380,14 @@ return arr.some(function(el) {
 }); 
 }
 
+
+function bidExists(arr, id) {
+    return arr.some(function(el) {
+        return el.user_id === id;
+    }); 
+    }
+
+    
 router.post('/cart/add', auth.required, (req, res, next) => {
     const id = req.body.id;
     const prod_id = req.body.prod_id;
@@ -480,7 +488,7 @@ router.post('/bid/add', auth.required, (req, res, next) => {
         if(data.bid_list)
         {
             
-            if(!itemExists(data.bid_list, prod_id))
+            if(!bidExists(data.bid_list, id))
             {
                 data.bid_list.push({
                     "user_id": id,
