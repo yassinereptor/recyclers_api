@@ -485,28 +485,24 @@ router.post('/bid/add', auth.required, (req, res, next) => {
     Product.findById(prod_id).exec((err, data)=>{
         if(err)
             return res.sendStatus(400).json(err);
-        if(data.bid_list)
-        {
             console.log(data.bid_list);
-            if(!bidExists(data.bid_list, id))
-            {
-                data.bid_list.push({
-                    "user_id": id,
-                    "bid": bid
-                });
-                data.save();
-                return res.json({result: true});            
-            }
-            else
-            {
-                data.bid = data.bid.filter(function(item) {
-                    return item.user_id !== id
-                });
-                data.save();
-                return res.json({result: true}); 
-            }
+        if(!bidExists(data.bid_list, id))
+        {
+            data.bid_list.push({
+                "user_id": id,
+                "bid": bid
+            });
+            data.save();
+            return res.json({result: true});            
         }
-        
+        else
+        {
+            data.bid = data.bid.filter(function(item) {
+                return item.user_id !== id
+            });
+            data.save();
+            return res.json({result: true}); 
+        }
     });
 
     
