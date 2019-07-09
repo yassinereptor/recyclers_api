@@ -434,7 +434,7 @@ router.post('/cart/removeall', auth.required, (req, res, next) => {
 });
 
 
-router.post('/cart/total', auth.optional, (req, res, next) => {
+router.post('/cart/total', auth.required, (req, res, next) => {
     const id = req.body.id;
 
     Users.findById(id).exec((err, data) => {
