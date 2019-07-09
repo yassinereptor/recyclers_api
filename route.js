@@ -342,7 +342,7 @@ router.post('/product/review/load', auth.optional, (req, res, next) => {
     });
 });
 
-router.post('/cart/load', auth.optional, (req, res, next) => {
+router.post('/cart/load', auth.required, (req, res, next) => {
     const id = req.body.id;
 
     var prods = new Array();
@@ -486,27 +486,80 @@ router.post('/bid/add', auth.required, (req, res, next) => {
         if(err)
             return res.sendStatus(400).json(err);
             console.log(data.bid_list);
-        if(!bidExists(data.bid_list, id))
-        {
-            data.bid_list.push({
-                "user_id": id,
-                "bid": bid
-            });
-            data.save();
-            return res.json({result: true});            
-        }
-        else
-        {
-            data.bid_list = data.bid_list.filter(function(item) {
-                return item.user_id !== id
-            });
-            data.save();
-            return res.json({result: true}); 
-        }
+        Users.findById(id).exec((err, user)=>{
+            if(err)
+                return res.sendStatus(400).json(err);
+                console.log(user.bid_list);
+            if(!itemExists(user.bid_list, prod_id))
+            {
+                user.bid_list.push({
+                    "prod_id": prod_id,
+                    "bid": bid
+                });
+                user.save();
+            }
+            else
+            {
+                user.bid_list = user.bid_list.filter(function(item) {
+                    return item.prod_id !== prod_id
+                });
+                user.save();
+            }
+            
+            if(!bidExists(data.bid_list, id))
+            {
+                data.bid_list.push({
+                    "user_id": id,
+                    "bid": bid
+                });
+                data.save();
+                return res.json({result: true});
+            }
+            else
+            {
+                data.bid_list = data.bid_list.filter(function(item) {
+                    return item.user_id !== id
+                });
+                data.save();
+                return res.json({result: true});
+            }
+        });
     });
 
     
 });
+
+
+router.post('/bid/load', auth.required, (req, res, next) => {
+    const id = req.body.id;
+
+    // var prods = new Array();
+
+    Users.findById(id).exec((err, data) => {
+        if(err)
+            return res.json(err);
+        var ids = new Array();
+
+        data.bid_list.forEach((item)=>{
+            ids.push(item.prod_id);
+        });
+
+        Product.find({'_id': {$in: ids}}).exec((err, prods) => {
+            if(err)
+                return res.json(err);
+            var p = Array();
+            p = prods.map((item, index)=>{
+                var i = {
+                    ...item._doc,
+                    "bid": data.bid_list[index].bid
+                };
+                return (i);
+            });
+            return res.json(p);
+        });
+    });
+});
+
 
 router.post('/profile/mode', auth.required, (req, res, next) => {
     const id = req.body.id;

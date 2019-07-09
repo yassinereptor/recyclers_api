@@ -23,6 +23,7 @@ const UsersSchema = new Schema({
     pos: String,
     profile: String,
     cart: Array,
+    bid_list: Array,
     hash: String,
     salt: String,
 });
