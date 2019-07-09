@@ -17,6 +17,7 @@ const ProductSchema = new Schema({
     fix: Boolean,
     bid: Boolean,
     images: Array,
+    bid: Array,
     time: String
 });
 

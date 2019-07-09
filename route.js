@@ -468,6 +468,42 @@ router.post('/cart/total', auth.required, (req, res, next) => {
     
 });
 
+router.post('/bid/add', auth.required, (req, res, next) => {
+    const id = req.body.id;
+    const prod_id = req.body.prod_id;
+    const bid = req.body.bid;
+
+
+    Product.findById(prod_id).exec((err, data)=>{
+        if(err)
+            return res.sendStatus(400).json(err);
+        if(data.bid)
+        {
+            
+            if(!itemExists(data.bid, prod_id))
+            {
+                data.bid.push({
+                    "user_id": id,
+                    "bid": quantite
+                });
+                data.save();
+                return res.json({result: true});            
+            }
+            else
+            {
+                data.bid = data.bid.filter(function(item) {
+                    return item.user_id !== id
+                });
+                data.save();
+                return res.json({result: true}); 
+            }
+        }
+        
+    });
+
+    
+});
+
 router.post('/profile/mode', auth.required, (req, res, next) => {
     const id = req.body.id;
     const seller = req.body.seller;
