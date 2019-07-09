@@ -477,14 +477,14 @@ router.post('/bid/add', auth.required, (req, res, next) => {
     Product.findById(prod_id).exec((err, data)=>{
         if(err)
             return res.sendStatus(400).json(err);
-        if(data.bid)
+        if(data.bid_list)
         {
             
             if(!itemExists(data.bid, prod_id))
             {
                 data.bid.push({
                     "user_id": id,
-                    "bid": quantite
+                    "bid_list": bid
                 });
                 data.save();
                 return res.json({result: true});            
