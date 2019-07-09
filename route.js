@@ -487,7 +487,6 @@ router.post('/bid/add', auth.required, (req, res, next) => {
             return res.sendStatus(400).json(err);
         if(data.bid_list)
         {
-            cd
             if(!bidExists(data.bid_list, id))
             {
                 data.bid_list.push({
