@@ -497,7 +497,7 @@ router.post('/bid/add', auth.required, (req, res, next) => {
         }
         else
         {
-            data.bid = data.bid.filter(function(item) {
+            data.bid = data.bid_list.filter(function(item) {
                 return item.user_id !== id
             });
             data.save();
