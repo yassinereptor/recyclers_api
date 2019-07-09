@@ -480,11 +480,11 @@ router.post('/bid/add', auth.required, (req, res, next) => {
         if(data.bid_list)
         {
             
-            if(!itemExists(data.bid, prod_id))
+            if(!itemExists(data.bid_list, prod_id))
             {
-                data.bid.push({
+                data.bid_list.push({
                     "user_id": id,
-                    "bid_list": bid
+                    "bid": bid
                 });
                 data.save();
                 return res.json({result: true});            
