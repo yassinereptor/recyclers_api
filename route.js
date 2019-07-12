@@ -575,14 +575,14 @@ router.post('/credit/add', auth.required, (req, res, next) => {
             return res.sendStatus(400).json(err);
         console.log(user.credit);
         var obj = (type == "MasterCard" || type == "Visa")? {
-            "type" : req.body.type,
-            "card_number" : req.body.card_number,
-            "card_holder" : req.body.card_holder,
-            "card_exp" : req.body.card_exp,
-            "card_cvc" : req.body.card_cvc
+            "type" : type,
+            "card_number" : card_number,
+            "card_holder" : card_holder,
+            "card_exp" : card_exp,
+            "card_cvc" : card_cvc
         }:
         {
-            "type" : req.body.type,
+            "type" : type,
         }
         user.credit.push();
         user.save();
