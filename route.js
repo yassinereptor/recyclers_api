@@ -584,7 +584,7 @@ router.post('/credit/add', auth.required, (req, res, next) => {
         {
             "type" : type,
         }
-        user.credit.push();
+        user.credit.push(obj);
         user.save();
         return res.json({result: true}); 
     });
