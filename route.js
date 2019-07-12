@@ -532,7 +532,7 @@ router.post('/bid/add', auth.required, (req, res, next) => {
 
 router.post('/bid/load', auth.required, (req, res, next) => {
     const id = req.body.id;
-
+    
     // var prods = new Array();
 
     Users.findById(id).exec((err, data) => {
@@ -594,8 +594,12 @@ router.post('/credit/add', auth.required, (req, res, next) => {
 
 router.post('/credit/load', auth.required, (req, res, next) => {
     const id = req.body.id;
+    const payload = {
+        limit: parseInt(req.body.limit),
+        skip: parseInt(req.body.skip)
+    }
 
-    Users.findById(id).exec((err, user)=>{
+    Users.findById(id).skip(payload.skip).limit(payload.limit).exec((err, user)=>{
         if(err)
             return res.sendStatus(400).json(err);
         return res.json(user.credit); 
