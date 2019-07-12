@@ -592,6 +592,19 @@ router.post('/credit/add', auth.required, (req, res, next) => {
     
 });
 
+router.post('/credit/load', auth.required, (req, res, next) => {
+    const id = req.body.id;
+
+    Users.findById(id).exec((err, user)=>{
+        if(err)
+            return res.sendStatus(400).json(err);
+        return res.json(user.credit); 
+    });
+
+    
+});
+
+
 
 router.post('/profile/mode', auth.required, (req, res, next) => {
     const id = req.body.id;
