@@ -561,6 +561,38 @@ router.post('/bid/load', auth.required, (req, res, next) => {
 });
 
 
+router.post('/credit/add', auth.required, (req, res, next) => {
+    const id = req.body.id;
+    const type = req.body.type;
+    const card_number = req.body.card_number;
+    const card_holder = req.body.card_holder;
+    const card_exp = req.body.card_exp;
+    const card_cvc = req.body.card_cvc;
+
+
+    Users.findById(id).exec((err, user)=>{
+        if(err)
+            return res.sendStatus(400).json(err);
+        console.log(user.credit);
+        var obj = (type == "MasterCard" || type == "Visa")? {
+            "type" : req.body.type,
+            "card_number" : req.body.card_number,
+            "card_holder" : req.body.card_holder,
+            "card_exp" : req.body.card_exp,
+            "card_cvc" : req.body.card_cvc
+        }:
+        {
+            "type" : req.body.type,
+        }
+        user.credit.push();
+        user.save();
+        return res.json({result: true}); 
+    });
+
+    
+});
+
+
 router.post('/profile/mode', auth.required, (req, res, next) => {
     const id = req.body.id;
     const seller = req.body.seller;
@@ -594,6 +626,17 @@ router.get('/admin/products', auth.optional, (req, res, next) => {
             return res.sendStatus(400).json(err);
         return res.json(data);            
     });
+});
+
+router.post('/admin/users/delete', auth.optional, (req, res, next) => {
+    var id = req.body.id;
+    Users.findByIdAndDelete(id);
+});
+
+
+router.post('/admin/products/delete', auth.optional, (req, res, next) => {
+    var id = req.body.id;
+    Product.findByIdAndDelete(id);
 });
 
 
