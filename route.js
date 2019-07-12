@@ -564,6 +564,7 @@ router.post('/bid/load', auth.required, (req, res, next) => {
 router.post('/credit/add', auth.required, (req, res, next) => {
     const id = req.body.id;
     const type = req.body.type;
+    const card_id = req.body.card_id;
     const card_number = req.body.card_number;
     const card_holder = req.body.card_holder;
     const card_exp = req.body.card_exp;
@@ -576,6 +577,7 @@ router.post('/credit/add', auth.required, (req, res, next) => {
         console.log(user.credit);
         var obj = (type == "MasterCard" || type == "Visa")? {
             "type" : type,
+            "card_id" : card_id,
             "card_number" : card_number,
             "card_holder" : card_holder,
             "card_exp" : card_exp,
