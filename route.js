@@ -571,6 +571,7 @@ router.post('/credit/add', auth.required, (req, res, next) => {
     const card_cvc = req.body.card_cvc;
     const card_time = req.body.card_time;
     const paypal_email = req.body.paypal_email;
+    const wallet = req.body.wallet;
 
 
     Users.findById(id).exec((err, user)=>{
@@ -591,9 +592,12 @@ router.post('/credit/add', auth.required, (req, res, next) => {
             "paypal_email": paypal_email,
             "card_time" : card_time,
             "card_id" : card_id,
-        }: 
+        }:
         {
             "type" : type,
+            "wallet": wallet,
+            "card_time" : card_time,
+            "card_id" : card_id,
         }
         user.credit.push(obj);
         user.save();
