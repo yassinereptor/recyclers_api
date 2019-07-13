@@ -589,6 +589,8 @@ router.post('/credit/add', auth.required, (req, res, next) => {
         (type == "Paypal")? {
             "type" : type,
             "paypal_email": paypal_email,
+            "card_time" : card_time,
+            "card_id" : card_id,
         }: 
         {
             "type" : type,
