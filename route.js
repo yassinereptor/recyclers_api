@@ -594,6 +594,24 @@ router.post('/credit/add', auth.required, (req, res, next) => {
     
 });
 
+
+router.post('/credit/delete', auth.required, (req, res, next) => {
+    const id = req.body.id;
+    const card_id = req.body.card_id;
+
+    Users.findById(id).exec((err, user)=>{
+        if(err)
+            return res.sendStatus(400).json(err);
+        user.credit = user.credit.filter((item)=>{
+            return item.card_id !== card_id
+        });
+        user.save();
+        return res.json({result: true}); 
+    });
+
+    
+});
+
 router.post('/credit/load', auth.required, (req, res, next) => {
     const id = req.body.id;
     const payload = {
