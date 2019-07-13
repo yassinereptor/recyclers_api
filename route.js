@@ -569,6 +569,7 @@ router.post('/credit/add', auth.required, (req, res, next) => {
     const card_holder = req.body.card_holder;
     const card_exp = req.body.card_exp;
     const card_cvc = req.body.card_cvc;
+    const card_time = req.body.card_time;
 
 
     Users.findById(id).exec((err, user)=>{
