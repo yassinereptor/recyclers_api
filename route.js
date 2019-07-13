@@ -336,30 +336,34 @@ router.post('/product/delete', auth.optional, (req, res, next) => {
     const id =  req.body.id;
 
 
-    Product.findByIdAndDelete(prod_id);
-    Users.find({cart: {$elemMatch: {prod_id: prod_id}}}).exec((err, data)=>{
+    Product.findByIdAndDelete(prod_id).exec((err, data)=>{
         if(err)
-            return res.statusCode(400).json(err);
-        data.forEach((u)=>{
-            u.cart = u.cart.filter((item)=>{
-                return item.prod_id !== prod_id;
+                return res.statusCode(400).json(err);
+        Users.find({cart: {$elemMatch: {prod_id: prod_id}}}).exec((err, data)=>{
+            if(err)
+                return res.statusCode(400).json(err);
+            data.forEach((u)=>{
+                u.cart = u.cart.filter((item)=>{
+                    return item.prod_id !== prod_id;
+                });
+                u.save();
             });
-            u.save();
+        });
+        Users.find({bid_list: {$elemMatch: {prod_id: prod_id}}}).exec((err, data)=>{
+            if(err)
+                return res.statusCode(400).json(err);
+            data.forEach((u)=>{
+                u.cart = u.cart.filter((item)=>{
+                    return item.prod_id !== prod_id;
+                });
+                u.save();
+            });
+        });
+        return res.json({
+            result: true
         });
     });
-    Users.find({bid_list: {$elemMatch: {prod_id: prod_id}}}).exec((err, data)=>{
-        if(err)
-            return res.statusCode(400).json(err);
-        data.forEach((u)=>{
-            u.cart = u.cart.filter((item)=>{
-                return item.prod_id !== prod_id;
-            });
-            u.save();
-        });
-    });
-    return res.json({
-        result: true
-    });
+    
 });
 
 
