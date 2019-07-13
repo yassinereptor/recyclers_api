@@ -581,7 +581,8 @@ router.post('/credit/add', auth.required, (req, res, next) => {
             "card_number" : card_number,
             "card_holder" : card_holder,
             "card_exp" : card_exp,
-            "card_cvc" : card_cvc
+            "card_cvc" : card_cvc,
+            "card_time" : card_time
         }:
         {
             "type" : type,
