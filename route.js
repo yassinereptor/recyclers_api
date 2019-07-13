@@ -218,6 +218,9 @@ router.post('/product/add', auth.required, (req, res, next) => {
         unit: req.body.unit,
         cat: req.body.cat,
         time: req.body.time,
+        lat: req.body.lat,
+        lng: req.body.lng,
+        pos: req.body.pos,
     }
 
     console.log(prod);

@@ -18,7 +18,10 @@ const ProductSchema = new Schema({
     bid: Boolean,
     images: Array,
     bid_list: Array,
-    time: String
+    time: String,
+    lat: String,
+    lng: String,
+    pos: String,
 });
 
 mongoose.model('Product', ProductSchema);
